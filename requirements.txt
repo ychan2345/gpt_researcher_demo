@@ -1,0 +1,15 @@
+streamlit 
+python-docx 
+htmldocx 
+mistune 
+python-dotenv 
+openai 
+langchain 
+langchain_community 
+langchain-openai 
+tiktoken 
+pyyaml 
+pydantic 
+beautifulsoup4 
+colorama 
+md2pdf
