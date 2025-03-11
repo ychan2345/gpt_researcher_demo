@@ -14,3 +14,4 @@ beautifulsoup4
 colorama 
 md2pdf
 arxiv
+json_repair
