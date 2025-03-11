@@ -13,3 +13,4 @@ pydantic
 beautifulsoup4 
 colorama 
 md2pdf
+arxiv
