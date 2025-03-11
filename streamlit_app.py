@@ -13,28 +13,68 @@ import sys
 from gpt_researcher.utils.enum import ReportType, ReportSource
 from dotenv import load_dotenv
 
-# Load environment variables from .env file
-load_dotenv()
-
-# Verify API keys are loaded
-if not os.getenv("OPENAI_API_KEY"):
-    st.error("OPENAI_API_KEY not found in environment variables. Please make sure it's set in your .env file.")
-    st.stop()
-
-if not os.getenv("TAVILY_API_KEY"):
-    st.warning("TAVILY_API_KEY not found in environment variables. Some search functionality may be limited.")
-
-# Configure logging
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
-
-# Set page configuration
+# Set page configuration - MUST be the first Streamlit command
 st.set_page_config(
     page_title="GPT Researcher",
     page_icon="🔍",
     layout="wide",
     initial_sidebar_state="expanded"
 )
+
+# Load environment variables from .env file
+load_dotenv()
+
+# API Key Input section
+with st.sidebar:
+    st.header("API Keys")
+    
+    # Use masked placeholders for API keys
+    default_placeholder = "xxxxxxx"
+    
+    # Input fields for API keys
+    openai_api_key = st.text_input("OpenAI API Key", value="", type="password")
+    tavily_api_key = st.text_input("Tavily API Key", value="", type="password")
+    
+    # Only use the entered key if it's not the placeholder
+    if openai_api_key != default_placeholder:
+        os.environ["OPENAI_API_KEY"] = openai_api_key
+    else:
+        # Check if we have a key in environment variables
+        openai_api_key = os.getenv("OPENAI_API_KEY", "")
+        
+    if tavily_api_key != default_placeholder:
+        os.environ["TAVILY_API_KEY"] = tavily_api_key
+    else:
+        # Check if we have a key in environment variables
+        tavily_api_key = os.getenv("TAVILY_API_KEY", "")
+    
+    # Set environment variables with user input
+    if openai_api_key:
+        os.environ["OPENAI_API_KEY"] = openai_api_key
+    if tavily_api_key:
+        os.environ["TAVILY_API_KEY"] = tavily_api_key
+    
+    # Show API status
+    st.subheader("API Status")
+    if not os.getenv("OPENAI_API_KEY"):
+        st.error("⚠️ OpenAI API Key required")
+    else:
+        st.success("✅ OpenAI API Key set")
+        
+    if not os.getenv("TAVILY_API_KEY"):
+        st.warning("⚠️ Tavily API Key missing (optional)")
+    else:
+        st.success("✅ Tavily API Key set")
+
+# Verify required API key is present
+if not os.getenv("OPENAI_API_KEY"):
+    st.error("Please enter your OpenAI API Key in the sidebar to continue.")
+    st.info("Your API keys are not stored and are only used for the current session.")
+    st.stop()
+
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 # Define report types and sources matching the HTML form
 class ToneOptions(str, Enum):
